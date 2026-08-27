@@ -1,20 +1,30 @@
 /* ============================================================
    Hous Lab — 主题定制：融合 A+D「工程手册 × 论文目录」
-   基调：无衬线工程底 + 单一墨蓝强调 + hairline 分区
-   变量：--hl-* 为本项目命名空间；--sl-* 为 Starlight 官方变量
+   对照画布预览稿 pages/fusion-engineering-toc.html 实现
+   基调：无衬线工程底 + 单一墨蓝强调 + hairline 分区 + 点线目录
    ============================================================ */
 
-/* ---------- 1. 单强调色：墨蓝 ---------- */
+/* ---------- 1. 单强调色：墨蓝（01 方案） ---------- */
 :root {
   --sl-color-accent: #2f5d8a;
   --sl-color-accent-high: #4a7aad;
   --sl-color-accent-low: #dbe6f2;
 
-  /* 页面级语义变量（供自定义组件使用） */
+  /* 本项目语义 token（与预览稿一一对应） */
+  --hl-background: #fcfcfb;
   --hl-foreground: #1c1e21;
   --hl-muted-fg: #6b6e73;
   --hl-border: #e3e3df;
   --hl-muted-bg: #f2f2ef;
+
+  /* 覆盖 Starlight 文档主题的表面/文字色，浅暖白纸感 */
+  --sl-color-bg: var(--hl-background);
+  --sl-color-bg-nav: #f6f6f4;
+  --sl-color-text: var(--hl-foreground);
+
+  /* 站点字体：中文优先的无衬线栈 + mono */
+  --sl-font-sans: system-ui, -apple-system, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --sl-font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
 }
 
 [data-theme='dark'] {
@@ -22,37 +32,53 @@
   --sl-color-accent-high: #a8c4de;
   --sl-color-accent-low: #1c3247;
 
+  --hl-background: #191d22;
   --hl-foreground: #d5d8dc;
   --hl-muted-fg: #9298a0;
   --hl-border: #2b3037;
-  --hl-muted-bg: #191d22;
+  --hl-muted-bg: #22272e;
+
+  --sl-color-bg: var(--hl-background);
+  --sl-color-bg-nav: #1f242b;
+  --sl-color-text: var(--hl-foreground);
 }
 
 /* ---------- 2. 全局基调（方向 A 的冷静工程感） ---------- */
 
-html {
-  font-family: system-ui, -apple-system, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+body {
+  font-family: var(--sl-font-sans);
 }
 
-/* 主内容区排版收紧：15px / 1.75，信息密度取向 */
+/* 主内容区排版收紧：15px / 1.7，信息密度取向；层级压平 */
 .sl-markdown-content {
-  font-size: 0.9375rem;
-  line-height: 1.75;
+  font-size: 0.9375rem;   /* 15px */
+  line-height: 1.7;
 }
 
-.sl-markdown-content :is(h1, h2, h3, h4) {
-  font-weight: 600;
-  line-height: 1.3;
-}
+.sl-markdown-content h1 { font-size: 1.45rem; line-height: 1.35; font-weight: 600; }
+.sl-markdown-content h2 { font-size: 1.0625rem; line-height: 1.3; font-weight: 600; letter-spacing: 0.01em; }
+.sl-markdown-content h3 { font-size: 1rem; font-weight: 600; }
+.sl-markdown-content h4 { font-size: 0.9375rem; font-weight: 600; }
 
-/* 链接下划线偏移，接近纸面感但保持无衬线干练 */
+/* 链接下划线偏移，接近纸面但保持无衬线干练 */
 .sl-markdown-content a {
   text-underline-offset: 3px;
 }
 
+/* 首页大标题「首页」降噪：splash 模板的页面标题 */
+.content-panel h1 {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--hl-muted-fg);
+  letter-spacing: 0.02em;
+}
+.content-panel:first-of-type:has(h1#_top) {
+  display: none;
+}
+
 /* ---------- 3. 文章正文细节（LaTeX 感的克制版） ---------- */
 
-/* 代码块与行内代码：微圆角 */
+/* 行内代码与代码块：微圆角 */
 .sl-markdown-content :not(pre) > code,
 .expressive-code pre {
   border-radius: 4px !important;
@@ -74,6 +100,7 @@ html {
 .sl-markdown-content td {
   border: none;
   padding: 0.55rem 1rem;
+  text-align: left;
 }
 
 .sl-markdown-content tbody tr,
@@ -91,6 +118,12 @@ html {
   border-inline-start: 2px solid var(--sl-color-accent);
   background: transparent;
   font-style: normal;
+}
+
+/* 分隔线 hairline 化 */
+.sl-markdown-content hr {
+  border: none;
+  border-top: 1px solid var(--hl-border);
 }
 
 /* ---------- 4. 首页：论文点线目录（目录即最近更新） ---------- */
@@ -137,7 +170,7 @@ html {
   color: var(--hl-muted-fg);
 }
 
-/* 文章行：左缩进 + mono 子编号 + 标题 + 点线引导 */
+/* 文章行：左缩进 + mono 子编号 + 标题 + 点线引导 + hover 变色 */
 .hl-toc-art {
   display: flex;
   align-items: flex-end;
@@ -178,6 +211,25 @@ html {
   border-bottom: 1px dotted var(--hl-border);
 }
 
+/* 底部栏目篇数索引 */
+.hl-cat-index {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 6px;
+  margin-top: 2.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hl-border);
+  font-size: 0.8rem;
+  color: var(--hl-muted-fg);
+}
+.hl-cat-index b {
+  font-family: var(--sl-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--hl-foreground);
+}
+
 /* 空状态：暂无已发布文章 */
 .hl-empty {
   margin-top: 2.75rem;
@@ -188,6 +240,52 @@ html {
   color: var(--hl-muted-fg);
 }
 
+/* 窄屏：隐藏点线引导保对齐 */
 @media (max-width: 720px) {
   .hl-leader { display: none; }
+  .hl-art-date { margin-left: auto; }
+}
+
+/* ---------- 5. 首页站点导航条（预览稿的「首页 项目 部署实践…」一行） ---------- */
+
+.hl-site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 1.4rem;
+  row-gap: 0.25rem;
+  margin-top: 2.2rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--hl-border);
+  font-size: 0.875rem;
+}
+.hl-site-nav a {
+  color: var(--hl-muted-fg);
+  text-decoration: none;
+  transition: color 130ms ease;
+}
+.hl-site-nav a:hover {
+  color: var(--hl-foreground);
+  text-decoration: none;
+}
+.hl-site-nav a[aria-current='page'] {
+  color: var(--sl-color-accent);
+  font-weight: 600;
+}
+
+/* 点线目录整体宽度对齐预览稿：突破 splash 内容列限制观感（内部仍受容器约束） */
+.hl-toc .hl-toc-cat:first-of-type {
+  margin-top: 0;
+}
+
+/* ---------- 6. 站点标题（Hous Lab）对齐预览稿：小号、墨色、不抢眼 ---------- */
+
+.site-title {
+  font-size: 1.0625rem;   /* 17px，与预览稿 wordmark 一致 */
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--hl-foreground);
+}
+.site-title:hover {
+  color: var(--hl-foreground);
 }
