@@ -1,5 +1,5 @@
 ---
-title: Hous Lab
+title: 智驾 AI 系统与端侧智能技术实验室
 template: splash
 hero:
   tagline: Autonomous Driving × AI Systems × Edge Intelligence
