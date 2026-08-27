@@ -137,7 +137,7 @@ html {
   color: var(--hl-muted-fg);
 }
 
-/* 文章行：左缩进 + mono 子编号 + 标题 + 点线引导 + mono 日期 */
+/* 文章行：左缩进 + mono 子编号 + 标题 + 点线引导 */
 .hl-toc-art {
   display: flex;
   align-items: flex-end;
@@ -178,25 +178,16 @@ html {
   border-bottom: 1px dotted var(--hl-border);
 }
 
-/* 底部栏目篇数索引 */
-.hl-cat-index {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  column-gap: 6px;
-  margin-top: 2.25rem;
-  padding-top: 1rem;
+/* 空状态：暂无已发布文章 */
+.hl-empty {
+  margin-top: 2.75rem;
+  padding: 1.25rem 1rem;
   border-top: 1px solid var(--hl-border);
-  font-size: 0.8rem;
+  border-bottom: 1px solid var(--hl-border);
+  font-size: 0.9rem;
   color: var(--hl-muted-fg);
-}
-.hl-cat-index b {
-  font-family: var(--sl-font-mono);
-  font-variant-numeric: tabular-nums;
-  color: var(--hl-foreground);
 }
 
 @media (max-width: 720px) {
   .hl-leader { display: none; }
-  .hl-art-date { margin-left: auto; }
 }

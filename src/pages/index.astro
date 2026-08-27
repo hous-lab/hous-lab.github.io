@@ -1,0 +1,85 @@
+---
+import { getCollection } from 'astro:content';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+const categoryOrder = ['projects', 'deployment', 'research', 'engineering', 'notes'];
+const categoryLabels: Record<string, string> = {
+  projects: '项目',
+  deployment: '部署实践',
+  research: '研究',
+  engineering: '工程方法',
+  notes: '技术笔记',
+};
+
+const all = await getCollection('docs');
+
+const published = all.filter(
+  (entry) =>
+    !entry.data.draft &&
+    entry.id !== 'index' &&
+    entry.id !== 'about' &&
+    !entry.id.endsWith('/index') &&
+    !entry.id.endsWith('/about')
+);
+
+const grouped = categoryOrder
+  .map((cat, i) => ({
+    id: cat,
+    index: i + 1,
+    label: categoryLabels[cat] ?? cat,
+    articles: published.filter((e) => e.id.startsWith(`${cat}/`)),
+  }))
+  .filter((g) => g.articles.length > 0);
+---
+
+<StarlightPage
+  frontmatter={{
+    title: '首页',
+    description: 'Autonomous Driving × AI Systems × Edge Intelligence',
+    template: 'splash',
+    head: [
+      {
+        tag: 'title',
+        content: 'Hous Lab — Autonomous Driving × AI Systems × Edge Intelligence',
+      },
+      {
+        tag: 'meta',
+        attrs: {
+          name: 'description',
+          content:
+            '模型部署、推理优化与端侧智能的工程记录。所有文章经确认后发布。',
+        },
+      },
+    ],
+  }}
+>
+  <div class="hl-intro">
+    模型部署、推理优化与端侧智能的工程记录。所有文章经确认后发布，包括没走通的路线。
+  </div>
+
+  {grouped.length === 0 ? (
+    <p class="hl-empty">暂无已发布文章。</p>
+  ) : (
+    <div class="hl-toc">
+      {
+        grouped.map((group) => (
+          <>
+            <a class="hl-toc-cat" href={`/${group.id}/`}>
+              <span class="hl-toc-no">{String(group.index).padStart(2, '0')}</span>
+              <span class="hl-toc-name">{group.label}</span>
+              <span class="hl-leader" aria-hidden="true"></span>
+              <span class="hl-toc-tail">{group.articles.length} 篇</span>
+            </a>
+            {group.articles.map((article, j) => (
+              <a class="hl-toc-art" href={`/${article.id}/`}>
+                <span class="hl-art-no">{`${group.index}.${j + 1}`}</span>
+                <span class="hl-art-title">{article.data.title}</span>
+                <span class="hl-leader" aria-hidden="true"></span>
+              </a>
+            ))}
+          </>
+        ))
+      }
+    </div>
+  )}
+</StarlightPage>
