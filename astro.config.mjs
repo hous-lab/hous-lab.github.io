@@ -25,66 +25,10 @@ export default defineConfig({
       customCss: ['./src/styles/custom.css'],
       sidebar: [
         { label: '首页', link: '/' },
-        {
-          label: '项目',
-          items: [
-            { label: '项目概览', link: '/projects/' },
-            { label: 'Alpamayo on Jetson Orin', link: '/projects/alpamayo-orin/' },
-          ],
-        },
-        {
-          label: '部署实践',
-          items: [
-            { label: '部署概览', link: '/deployment/' },
-            {
-              label: 'Jetson Orin',
-              items: [
-                { autogenerate: { directory: 'deployment/orin' } },
-              ],
-            },
-            {
-              label: '模型量化',
-              items: [
-                { autogenerate: { directory: 'deployment/quantization' } },
-              ],
-            },
-            {
-              label: 'TensorRT-LLM',
-              items: [
-                { autogenerate: { directory: 'deployment/tensorrt-llm' } },
-              ],
-            },
-            {
-              label: 'Qualcomm QNN',
-              items: [{ autogenerate: { directory: 'deployment/qnn' } }],
-            },
-          ],
-        },
-        {
-          label: '研究',
-          items: [
-            { label: '研究概览', link: '/research/' },
-            { autogenerate: { directory: 'research' } },
-          ],
-        },
-        {
-          label: '工程方法',
-          items: [
-            { label: '工程概览', link: '/engineering/' },
-            {
-              label: '性能分析',
-              items: [
-                { autogenerate: { directory: 'engineering/profiling' } },
-              ],
-            },
-            {
-              label: '蒸馏与压缩',
-              items: [
-                { autogenerate: { directory: 'engineering/distillation' } },
-              ],
-            },
-          ],
-        },
+        { label: '项目', link: '/projects/' },
+        { label: '部署实践', link: '/deployment/' },
+        { label: '研究', link: '/research/' },
+        { label: '工程方法', link: '/engineering/' },
         { label: '技术笔记', link: '/notes/' },
         { label: '关于', link: '/about/' },
       ],
