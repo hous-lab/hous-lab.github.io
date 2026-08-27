@@ -1,66 +1,58 @@
 ---
 title: 智驾 AI 系统与端侧智能技术实验室
 template: splash
-hero:
-  tagline: Autonomous Driving × AI Systems × Edge Intelligence
-  description: 把真实项目里积累的技术经验，沉淀成公开的知识库。每一篇文章都经过确认后发布——包括那些没走通的路线。
-  actions:
-    - text: 项目
-      link: /projects/
-      variant: primary
-    - text: 研究方向
-      link: /research/
-      variant: secondary
-    - text: 部署实践
-      link: /deployment/
-      variant: secondary
-    - text: GitHub
-      link: https://github.com/hous-lab
-      variant: minimal
-      icon: github
 ---
 
-<div class="hl-section">
-  <div class="hl-section-title"><span class="hl-index">01</span>项目</div>
-  <div class="hl-section-sub">从代码到车端：完整工程的公开记录。</div>
-  <div class="hl-grid">
-    <a class="hl-card" href="/projects/">
-      <div class="hl-card-tag">Projects</div>
-      <div class="hl-card-title">项目记录</div>
-      <div class="hl-card-desc">项目背景、技术路线与工程结果的完整记录。待内容经确认后发布。</div>
-      <div class="hl-card-meta">coming soon</div>
-    </a>
-  </div>
+<div class="hl-intro">
+模型部署、推理优化与端侧智能的工程记录。所有文章经确认后发布，包括没走通的路线。
 </div>
 
-<div class="hl-section">
-  <div class="hl-section-title"><span class="hl-index">02</span>部署实践</div>
-  <div class="hl-section-sub">推理引擎、车端平台与模型量化的真实部署经验。</div>
-  <div class="hl-grid">
-    <a class="hl-card" href="/deployment/">
-      <div class="hl-card-tag">Deployment</div>
-      <div class="hl-card-title">部署与优化</div>
-      <div class="hl-card-desc">从 PyTorch 到车端引擎的每一步：格式转换、精度校准、延迟优化、踩坑记录。</div>
-      <div class="hl-card-meta">coming soon</div>
-    </a>
-  </div>
-</div>
+<div class="hl-toc">
 
-<div class="hl-section">
-  <div class="hl-section-title"><span class="hl-index">03</span>研究与笔记</div>
-  <div class="hl-section-sub">研究工作与技术基础笔记。</div>
-  <div class="hl-grid">
-    <a class="hl-card" href="/research/">
-      <div class="hl-card-tag hl-tag-orange">Research</div>
-      <div class="hl-card-title">研究方向</div>
-      <div class="hl-card-desc">自动驾驶端到端模型与高效推理相关的研究工作。</div>
-      <div class="hl-card-meta">coming soon</div>
-    </a>
-    <a class="hl-card" href="/notes/">
-      <div class="hl-card-tag">Notes</div>
-      <div class="hl-card-title">技术笔记</div>
-      <div class="hl-card-desc">CUDA、Transformer、推理优化等基础笔记——能推导、能手写、能讲清楚。</div>
-      <div class="hl-card-meta">coming soon</div>
-    </a>
-  </div>
+<a class="hl-toc-cat" href="/deployment/">
+  <span class="hl-toc-no">01</span>
+  <span class="hl-toc-name">部署实践</span>
+  <span class="hl-leader" aria-hidden="true"></span>
+  <span class="hl-toc-tail">8 篇</span>
+</a>
+
+<a class="hl-toc-art" href="/deployment/">
+  <span class="hl-art-no">1.1</span>
+  <span class="hl-art-title">部署与优化：从 PyTorch 到车端引擎的每一步</span>
+  <span class="hl-leader" aria-hidden="true"></span>
+  <time class="hl-art-date" datetime="2026-08-14">coming soon</time>
+</a>
+
+<a class="hl-toc-cat" href="/research/">
+  <span class="hl-toc-no">02</span>
+  <span class="hl-toc-name">研究</span>
+  <span class="hl-leader" aria-hidden="true"></span>
+  <span class="hl-toc-tail">3 篇</span>
+</a>
+
+<a class="hl-toc-art" href="/research/">
+  <span class="hl-art-no">2.1</span>
+  <span class="hl-art-title">自动驾驶端到端模型与高效推理</span>
+  <span class="hl-leader" aria-hidden="true"></span>
+  <time class="hl-art-date" datetime="2026-07-09">coming soon</time>
+</a>
+
+<a class="hl-toc-cat" href="/engineering/">
+  <span class="hl-toc-no">03</span>
+  <span class="hl-toc-name">工程方法</span>
+  <span class="hl-leader" aria-hidden="true"></span>
+  <span class="hl-toc-tail">5 篇</span>
+</a>
+
+<a class="hl-toc-art" href="/notes/">
+  <span class="hl-art-no">4.1</span>
+  <span class="hl-art-title">CUDA、Transformer、推理优化等基础笔记——能推导、能手写、能讲清楚</span>
+  <span class="hl-leader" aria-hidden="true"></span>
+  <time class="hl-art-date" datetime="2026-06-30">coming soon</time>
+</a>
+
+<p class="hl-cat-index">
+项目 <b>2</b> 篇 · 部署实践 <b>8</b> 篇 · 研究 <b>3</b> 篇 · 工程方法 <b>5</b> 篇 · 技术笔记 <b>12</b> 篇
+</p>
+
 </div>
