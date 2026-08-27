@@ -1,0 +1,112 @@
+/* Hous Lab — Technical / Minimal / Research Lab 主题定制 */
+
+/* ---------- 品牌色：实验室青 + 信号橙 ---------- */
+:root {
+  --sl-color-accent: #0d9488;
+  --sl-color-accent-high: #0f766e;
+  --sl-color-accent-low: #99f6e4;
+  --hl-accent-orange: #f59e0b;
+  --hl-card-border: #e2e8f0;
+  --hl-card-bg: #ffffff;
+}
+
+[data-theme='dark'] {
+  --sl-color-accent: #2dd4bf;
+  --sl-color-accent-high: #5eead4;
+  --sl-color-accent-low: #134e4a;
+  --hl-accent-orange: #fbbf24;
+  --hl-card-border: #1e3a45;
+  --hl-card-bg: #0f1e28;
+}
+
+/* ---------- 首页 Hero ---------- */
+.hero { padding-block: 4rem 2.5rem; }
+.hero-tagline {
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  color: var(--sl-color-white);
+}
+[data-theme='light'] .hero-tagline { color: var(--sl-color-gray-6); }
+
+/* ---------- 首页区块标题 ---------- */
+.hl-section {
+  margin-top: 3rem;
+}
+.hl-section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.hl-section-title .hl-index {
+  font-family: var(--sl-font-mono);
+  font-size: 0.85rem;
+  color: var(--sl-color-accent);
+  font-weight: 600;
+}
+.hl-section-sub {
+  color: var(--sl-color-gray-3);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- 卡片网格 ---------- */
+.hl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-block: 0.5rem 1.5rem;
+}
+.hl-card {
+  display: block;
+  border: 1px solid var(--hl-card-border);
+  border-radius: 12px;
+  background: var(--hl-card-bg);
+  padding: 1.1rem 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.hl-card:hover {
+  border-color: var(--sl-color-accent);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+.hl-card-tag {
+  font-family: var(--sl-font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sl-color-accent);
+  font-weight: 600;
+}
+.hl-card-tag.hl-tag-orange { color: var(--hl-accent-orange); }
+.hl-card-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin: 0.35rem 0 0.4rem;
+  color: var(--sl-color-white);
+}
+[data-theme='light'] .hl-card-title { color: var(--sl-color-gray-6); }
+.hl-card-desc {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--sl-color-gray-3);
+}
+.hl-card-meta {
+  margin-top: 0.6rem;
+  font-family: var(--sl-font-mono);
+  font-size: 0.72rem;
+  color: var(--sl-color-gray-2);
+}
+
+/* ---------- 文章页脚注 ---------- */
+.hl-todo {
+  border-left: 3px solid var(--hl-accent-orange);
+  padding: 0.5rem 1rem;
+  background: color-mix(in srgb, var(--hl-accent-orange) 8%, transparent);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9rem;
+}
