@@ -6,18 +6,18 @@ sidebar:
 
 ---
 
-> 模型: [SparseDriveV2](https://github.com/swc-17/SparseDriveV2) (Bench2Drive, MIT)
-> 平台: Qualcomm SA8775P ADP (AI Hub 云端设备)
-> 结果: head **716.2 ms** / 峰值内存 21-32 MB; backbone 20.1 ms
-> 代码: [hous-lab/sparsedrive2-sa8775p-qnn](https://github.com/hous-lab/sparsedrive2-sa8775p-qnn)
+- 模型: [SparseDriveV2](https://github.com/swc-17/SparseDriveV2) (Bench2Drive, MIT)
+- 平台: Qualcomm SA8775P ADP (AI Hub 云端设备)
+- 结果: **backbone** 20.1 ms; **head** **716.2 ms** / 峰值内存 21-32 MB
+- 代码: [hous-lab/sparsedrive2-sa8775p-qnn](https://github.com/hous-lab/sparsedrive2-sa8775p-qnn)
 
 ## 1. 背景
 
-SparseDriveV2 是地平线开源的端到端自动驾驶模型，我们此前已经完成了它在 NVIDIA AGX Orin 上的本地部署——TensorRT 引擎，head 单卡延迟 24.9 ms。
+SparseDriveV2 是地平线开源的端到端自动驾驶模型，我们此前已经完成了它在 NVIDIA AGX Orin 64GB 上的TensorRT部署，端到端延迟 49.2ms@int8。*关于Orin平台的部署细节等过段时间空闲了再具体介绍下。*
 
-这次要做的是高通这一侧。高通官方提供了 [AI Hub](https://aihub.qualcomm.com)：云端托管了一批真实设备，包括智能驾驶领域的旗舰 SoC SA8775P。通过它，我们可以在没有硬件的情况下完成这个模型在高通芯片上的量化、编译和推理测试，把整条技术链路走通。
+这次要做的是高通的平台，直接使用高通官方提供的云端 [AI Hub](https://aihub.qualcomm.com)。这里云端托管了一批真实设备，包括智驾领域的SA8775P。通过它，我们可以在没有硬件的情况下完成这个模型在高通芯片上的量化、编译和推理测试，把整条技术链路的基本流程走一遍。
 
-模型的两个子网最终都完成了部署：backbone（ResNet-34，纯卷积）**20.1 ms**，head（含 Deformable Aggregation 采样链）**716.2 ms**。前者一切顺利，后者每一步都在和平台打架——本文两条线都记录，重点在 head。
+模型的两个子网络最终都完成了量化部署：backbone（ResNet-34，纯卷积）**20.1 ms**，head（含 Deformable Aggregation 采样链）**716.2 ms**。backbone没啥好说的的纯卷积平台算子支持度最高，一切顺利。问题是具有Transformer及复杂算子的head，主要是摸清楚平台的算子支持度、底层资源分配等，最直接的就是Profiling分析，在TRT生态也是这一套。
 
 ## 2. 平台的最小闭环
 
@@ -159,9 +159,11 @@ head 从第一版到最终版 -43% 延迟、-75% 内存，已到标准算子的�
 - 自定义算子上不了 AI Hub 云端，不是格式问题也不是能绕过的限制；有这个需求需要在本地备一台真机。
 
 ## 附: 开源仓库
+当前的部署项目已经开源，follow指引可以直接复现：[hous-lab/sparsedrive2-sa8775p-qnn](https://github.com/hous-lab/sparsedrive2-sa8775p-qnn)
 
-全部管线脚本、编译配置、fused op 源码和实验数据在: [hous-lab/sparsedrive2-sa8775p-qnn](https://github.com/hous-lab/sparsedrive2-sa8775p-qnn)
+模型的权重请从上游仓库获取 ([swc-17/SparseDriveV2](https://github.com/swc-17/SparseDriveV2))，本仓库不含权重与校准数据。
 
-权重请从上游获取 ([swc-17/SparseDriveV2](https://github.com/swc-17/SparseDriveV2))，本仓库不含权重与校准数据。
-
-后续计划：map / motion_plan 子模型复用同一管线；fused op 等待真机验证；对应 Orin/TRT 侧的另一篇对比文章也在准备中。
+后续计划：
+- 当前没有做 map / motion_plan 的部署，不过可以复用同一套逻辑；
+- fused op 需要等待真机验证，暂时挂起吧；
+- 挖坑：在 Orin/TRT 侧的部署文章和开源。
