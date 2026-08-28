@@ -27,6 +27,7 @@ export default defineConfig({
         { label: '首页', link: '/' },
         { label: '项目', link: '/projects/' },
         { label: '部署实践', link: '/deployment/' },
+        { label: 'SparseDriveV2 在 SA8775P 上的量化部署', link: '/deployment/sparsedrive2-sa8775p-qnn-deployment/' },
         { label: '研究', link: '/research/' },
         { label: '工程方法', link: '/engineering/' },
         { label: '技术笔记', link: '/notes/' },
