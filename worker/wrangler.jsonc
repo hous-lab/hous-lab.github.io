@@ -1,0 +1,20 @@
+// Hous Lab 统计后端 — Cloudflare Worker 配置
+// 部署步骤见 worker/README.md（三步：login → 建 KV → deploy）
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "hous-lab-stats",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-08-01",
+	// KV 命名空间：执行 `npm run worker:kv:create` 后，
+	// 把输出的 id 粘贴到下面替换占位符
+	"kv_namespaces": [
+		{
+			"binding": "STATS",
+			"id": "d94576ba83614c0dafa48baab9ae51d0"
+		}
+	],
+	// 浏览器直接调用，需要观察器开启 CORS（代码里按 Origin 白名单放行）
+	"observability": {
+		"enabled": true
+	}
+}

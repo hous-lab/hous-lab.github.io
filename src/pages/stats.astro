@@ -1,0 +1,266 @@
+---
+/**
+ * 站点统计页：访客世界地图（国家级聚合）+ 汇总 + 热门文章。
+ * 数据来自 Cloudflare Worker（GET /map、GET /top），接口不可达时降级为提示文字。
+ * ECharts 按需引入（core + Map），GeoJSON 从 /assets/world.geojson 运行时加载。
+ */
+import { getCollection } from 'astro:content';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+// 构建期生成 pathname → 标题映射，供「热门文章」解析显示名
+const docs = await getCollection('docs');
+const titles: Record<string, string> = {};
+for (const d of docs) titles[`/${d.id}/`] = d.data.title;
+---
+
+<StarlightPage
+  frontmatter={{
+    title: '站点统计',
+    description: '访客世界地图与浏览统计（国家级匿名聚合）',
+    template: 'splash',
+    pagefind: false,
+    head: [
+      {
+        tag: 'title',
+        content: '站点统计 — Hous Lab',
+      },
+      {
+        tag: 'meta',
+        attrs: {
+          name: 'description',
+          content: '访客世界地图与浏览统计，仅按国家级匿名聚合，不存储原始 IP。',
+        },
+      },
+    ],
+  }}
+>
+  <div class="hl-stats" data-stats>
+    <div class="hl-intro">
+      访客来自哪里、哪些文章被读得最多。统计为匿名国家级聚合，不存储任何原始 IP。
+    </div>
+
+    <div class="hl-stats-cards" data-cards hidden>
+      <div class="hl-stat-card">
+        <div class="hl-stat-num hl-num" data-stat="views">0</div>
+        <div class="hl-stat-label">累计浏览</div>
+      </div>
+      <div class="hl-stat-card">
+        <div class="hl-stat-num hl-num" data-stat="countries">0</div>
+        <div class="hl-stat-label">覆盖国家 / 地区</div>
+      </div>
+      <div class="hl-stat-card">
+        <div class="hl-stat-num hl-num" data-stat="likes">0</div>
+        <div class="hl-stat-label">累计点赞</div>
+      </div>
+    </div>
+
+    <div class="hl-stats-map" data-map hidden></div>
+    <p class="hl-stats-error" data-error hidden>统计服务暂时不可用。</p>
+
+    <div class="hl-stats-top" data-topwrap hidden>
+      <div class="hl-stats-top-title">热门文章</div>
+      <div class="hl-toc" data-top></div>
+    </div>
+  </div>
+</StarlightPage>
+
+<script type="application/json" id="hl-page-titles" set:html={JSON.stringify(titles)} />
+
+<script>
+  import * as echarts from 'echarts/core';
+  import { MapChart } from 'echarts/charts';
+  import { TooltipComponent, VisualMapComponent } from 'echarts/components';
+  import { CanvasRenderer } from 'echarts/renderers';
+  import { STATS_API } from '../consts';
+
+  echarts.use([MapChart, TooltipComponent, VisualMapComponent, CanvasRenderer]);
+
+  const root = document.querySelector<HTMLElement>('[data-stats]');
+  if (root) {
+    const titles: Record<string, string> = JSON.parse(
+      document.getElementById('hl-page-titles')!.textContent ?? '{}'
+    );
+
+    // ISO 3166-1 alpha-2 → 地图区域名。主用 Intl.DisplayNames，
+    // 对 Natural Earth 的缩写命名做少量别名修正。
+    const NE_ALIASES: Record<string, string> = {
+      'Democratic Republic of the Congo': 'Dem. Rep. Congo',
+      'Central African Republic': 'Central African Rep.',
+      'South Sudan': 'S. Sudan',
+      'Dominican Republic': 'Dominican Rep.',
+      'Equatorial Guinea': 'Eq. Guinea',
+      'Solomon Islands': 'Solomon Is.',
+      'Falkland Islands': 'Falkland Is.',
+      'Fr. S. Antarctic Lands': 'Fr. S. Antarctic Lands',
+      'Bosnia and Herzegovina': 'Bosnia and Herz.',
+      'United States': 'United States',
+    };
+    let regionNames: Intl.DisplayNames;
+    try {
+      regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+    } catch {
+      regionNames = null as unknown as Intl.DisplayNames;
+    }
+    const ccToName = (cc: string) => {
+      let name: string | undefined;
+      try {
+        name = regionNames?.of(cc) ?? undefined;
+      } catch {
+        name = undefined;
+      }
+      if (name && NE_ALIASES[name]) return NE_ALIASES[name];
+      return name && name !== cc ? name : undefined;
+    };
+    const CC_ZH: Record<string, string> = {
+      CN: '中国', US: '美国', DE: '德国', JP: '日本', GB: '英国', FR: '法国',
+      KR: '韩国', SG: '新加坡', CA: '加拿大', AU: '澳大利亚', NL: '荷兰',
+      IN: '印度', RU: '俄罗斯', SE: '瑞典', CH: '瑞士', HK: '中国香港',
+      TW: '中国台湾', MO: '中国澳门', IT: '意大利', ES: '西班牙', BR: '巴西',
+    };
+
+    const isDark = () => document.documentElement.dataset.theme === 'dark';
+    const fmt = (n: number) => n.toLocaleString('zh-CN');
+
+    type MapData = { countries: Record<string, number>; totalViews: number; totalLikes: number };
+    let mapData: MapData | null = null;
+    let chart: echarts.ECharts | null = null;
+
+    function renderMap() {
+      const el = root.querySelector<HTMLElement>('[data-map]');
+      if (!el || !mapData) return;
+      el.hidden = false;
+
+      const dark = isDark();
+      const entries = Object.entries(mapData.countries)
+        .map(([cc, value]) => ({ name: ccToName(cc) ?? `__${cc}`, value, cc }))
+        .filter((e) => e.name);
+
+      const maxValue = Math.max(1, ...entries.map((e) => e.value));
+
+      chart ??= echarts.init(el);
+      chart.setOption({
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'item',
+          formatter: (p: { name?: string; data?: { cc?: string; value?: number } }) => {
+            const d = p.data as { cc?: string; value?: number } | undefined;
+            if (!d?.cc) return p.name ?? '';
+            const zh = CC_ZH[d.cc] ?? d.cc;
+            return `<span style="font-family:ui-monospace,Menlo,monospace">${zh}</span>　<span style="color:#888">${fmt(d.value ?? 0)} 次访问</span>`;
+          },
+        },
+        visualMap: {
+          type: 'continuous',
+          min: 0,
+          max: maxValue,
+          left: 12,
+          bottom: 18,
+          calculable: false,
+          showLabel: false,
+          itemWidth: 10,
+          itemHeight: 84,
+          text: ['多', '少'],
+          textStyle: { color: dark ? '#9298a0' : '#6b6e73', fontSize: 10 },
+          inRange: { color: dark ? ['#1c3247', '#7fa8cc'] : ['#dbe6f2', '#2f5d8a'] },
+        },
+        series: [
+          {
+            type: 'map',
+            map: 'world',
+            roam: true,
+            scaleLimit: { min: 1, max: 6 },
+            top: 12,
+            bottom: 12,
+            left: 12,
+            right: 12,
+            label: { show: false },
+            emphasis: {
+              label: { show: false },
+              itemStyle: { areaColor: dark ? '#a8c4de' : '#4a7aad' },
+            },
+            itemStyle: {
+              borderColor: dark ? '#2b3037' : '#e3e3df',
+              borderWidth: 0.5,
+              areaColor: dark ? '#22272e' : '#f2f2ef',
+            },
+            data: entries,
+          },
+        ],
+      });
+    }
+
+    async function boot() {
+      // 并行：地图数据 + 世界 GeoJSON
+      const [statsRes, geoRes] = await Promise.all([
+        fetch(`${STATS_API}/map`).then((r) => (r.ok ? r.json() : Promise.reject(r.status))),
+        fetch('/assets/world.geojson').then((r) => r.json()),
+      ]);
+      mapData = statsRes as MapData;
+
+      echarts.registerMap('world', geoRes as Parameters<typeof echarts.registerMap>[1]);
+
+      const cards = root.querySelector<HTMLElement>('[data-cards]');
+      if (cards) {
+        root.querySelector<HTMLElement>('[data-stat="views"]')!.textContent = fmt(mapData.totalViews);
+        root.querySelector<HTMLElement>('[data-stat="countries"]')!.textContent = String(
+          Object.keys(mapData.countries).length
+        );
+        root.querySelector<HTMLElement>('[data-stat="likes"]')!.textContent = fmt(mapData.totalLikes);
+        cards.hidden = false;
+      }
+      // 地图渲染独立降级：失败不影响卡片与 Top 列表
+      try {
+        renderMap();
+      } catch (e) {
+        console.warn('[stats] map render failed:', e);
+      }
+      loadTop();
+    }
+
+    function loadTop() {
+      // 热门文章（失败不阻塞地图）
+      fetch(`${STATS_API}/top?limit=10`)
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .then((top: { page: string; views: number }[]) => {
+          const wrap = root.querySelector<HTMLElement>('[data-topwrap]');
+          const list = root.querySelector<HTMLElement>('[data-top]');
+          if (!wrap || !list || top.length === 0) return;
+          top.forEach((t, i) => {
+            const a = document.createElement('a');
+            a.className = 'hl-toc-art';
+            a.href = t.page;
+            const no = document.createElement('span');
+            no.className = 'hl-art-no';
+            no.textContent = String(i + 1).padStart(2, '0');
+            const title = document.createElement('span');
+            title.className = 'hl-art-title';
+            title.textContent = titles[t.page] ?? t.page;
+            const leader = document.createElement('span');
+            leader.className = 'hl-leader';
+            leader.setAttribute('aria-hidden', 'true');
+            const views = document.createElement('span');
+            views.className = 'hl-art-date';
+            views.textContent = `${fmt(t.views)} 次阅读`;
+            a.append(no, title, leader, views);
+            list.appendChild(a);
+          });
+          wrap.hidden = false;
+        })
+        .catch(() => {
+          /* 静默 */
+        });
+    }
+
+    boot().catch(() => {
+      const err = root.querySelector<HTMLElement>('[data-error]');
+      if (err) err.hidden = false;
+    });
+
+    // 深浅色切换时重绘
+    new MutationObserver(() => {
+      if (chart && mapData) renderMap();
+    }).observe(document.documentElement, { attributeFilter: ['data-theme'] });
+
+    window.addEventListener('resize', () => chart?.resize());
+  }
+</script>

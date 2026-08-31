@@ -21,3 +21,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# wrangler local dev state (KV 模拟数据)
+.wrangler/

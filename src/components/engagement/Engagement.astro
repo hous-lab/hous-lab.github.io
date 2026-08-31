@@ -1,0 +1,90 @@
+---
+/**
+ * 文章底部互动条：阅读量 + 点赞。
+ * - 挂载在 Footer 覆盖组件里，仅 doc 模板页渲染
+ * - 接口不可达时整行静默隐藏，不影响阅读
+ * - 计数用 mono 字体 + hairline，与站点纸张工程手册主题一致
+ */
+import { STATS_API } from '../../consts';
+---
+
+<div class="hl-eng" data-engage hidden>
+  <span class="hl-eng-views">
+    <span class="hl-num" data-views>0</span>&nbsp;次阅读
+  </span>
+  <button
+    class="hl-eng-like"
+    type="button"
+    data-like
+    aria-pressed="false"
+    aria-label="点赞这篇文章"
+    title="点赞"
+  >
+    <svg
+      viewBox="0 0 16 16"
+      width="13"
+      height="13"
+      aria-hidden="true"
+      fill="currentColor"
+    >
+      <path
+        d="M4.25 2.5c-1.5 0-2.75 1.23-2.75 2.75 0 2.2 1.82 3.53 4.05 5.7.6.57 1.24 1.18 1.95 1.88.12.12.32.12.44 0 .71-.7 1.35-1.31 1.95-1.88 2.23-2.17 4.05-3.5 4.05-5.7 0-1.52-1.25-2.75-2.75-2.75-1.03 0-1.9.53-2.44 1.3-.09.13-.28.13-.37 0-.54-.77-1.41-1.3-2.44-1.3Z"
+      />
+    </svg>
+    <span class="hl-num" data-likes>0</span>
+  </button>
+</div>
+
+<script>
+  import { STATS_API } from '../../consts';
+
+  const el = document.querySelector<HTMLElement>('[data-engage]');
+  if (el) {
+    const page = location.pathname;
+    const viewsEl = el.querySelector<HTMLElement>('[data-views]')!;
+    const likesEl = el.querySelector<HTMLElement>('[data-likes]')!;
+    const likeBtn = el.querySelector<HTMLButtonElement>('[data-like]')!;
+
+    const fmt = (n: number) => n.toLocaleString('zh-CN');
+
+    const render = (data: { views?: number; likes?: number; liked?: boolean }) => {
+      if (typeof data.views === 'number') viewsEl.textContent = fmt(data.views);
+      if (typeof data.likes === 'number') likesEl.textContent = fmt(data.likes);
+      if (typeof data.liked === 'boolean') {
+        likeBtn.setAttribute('aria-pressed', String(data.liked));
+      }
+      el.hidden = false;
+    };
+
+    const ping = (path: string, body: unknown) =>
+      fetch(`${STATS_API}${path}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include',
+        keepalive: true,
+      }).then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))));
+
+    // 浏览计数（接口失败则保持隐藏）
+    ping('/view', { page })
+      .then(render)
+      .catch(() => {
+        /* 静默降级 */
+      });
+
+    // 点赞切换
+    let busy = false;
+    likeBtn.addEventListener('click', () => {
+      if (busy) return;
+      busy = true;
+      ping('/like', { page })
+        .then(render)
+        .catch(() => {
+          /* 静默降级 */
+        })
+        .finally(() => {
+          busy = false;
+        });
+    });
+  }
+</script>

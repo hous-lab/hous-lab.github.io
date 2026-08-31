@@ -1,0 +1,57 @@
+---
+/**
+ * giscus 评论区（数据存于 GitHub Discussions）。
+ * 未配置 repoId/categoryId 时整块静默不渲染（见 src/consts.ts）。
+ * 主题跟随站点 light/dark。
+ */
+import { GISCUS, GISCUS_ENABLED } from '../../consts';
+---
+
+{
+  GISCUS_ENABLED && (
+    <section class="hl-comments" aria-label="评论区">
+      <div class="hl-comments-title">评论</div>
+      <div class="giscus-wrap" data-giscus />
+    </section>
+  )
+}
+
+<script>
+  import { GISCUS, GISCUS_ENABLED } from '../../consts';
+
+  if (GISCUS_ENABLED) {
+    const mount = document.querySelector<HTMLElement>('[data-giscus]');
+    if (mount) {
+      const s = document.createElement('script');
+      s.src = 'https://giscus.app/client.js';
+      s.async = true;
+      s.crossOrigin = 'anonymous';
+      s.setAttribute('data-repo', GISCUS.repo);
+      s.setAttribute('data-repo-id', GISCUS.repoId);
+      s.setAttribute('data-category', GISCUS.category);
+      s.setAttribute('data-category-id', GISCUS.categoryId);
+      s.setAttribute('data-mapping', 'pathname');
+      s.setAttribute('data-strict', '0');
+      s.setAttribute('data-reactions-enabled', '1');
+      s.setAttribute('data-emit-metadata', '0');
+      s.setAttribute('data-input-position', 'bottom');
+      // 初始主题跟站点当前状态（后续切换由下面的 observer 同步）
+      s.setAttribute('data-theme', document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+      s.setAttribute('data-lang', 'zh-CN');
+      s.setAttribute('data-loading', 'lazy');
+      mount.appendChild(s);
+
+      // 跟随站点 data-theme 切换 giscus 明暗
+      const apply = () => {
+        const dark = document.documentElement.dataset.theme === 'dark';
+        const msg = { setConfig: { theme: dark ? 'dark' : 'light' } };
+        document
+          .querySelectorAll<HTMLIFrameElement>('iframe.giscus, iframe[title="giscus"]')
+          .forEach((f) => f.contentWindow?.postMessage(msg, 'https://giscus.app'));
+      };
+      new MutationObserver(apply).observe(document.documentElement, {
+        attributeFilter: ['data-theme'],
+      });
+    }
+  }
+</script>

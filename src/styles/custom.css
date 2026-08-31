@@ -289,3 +289,123 @@ body {
 .site-title:hover {
   color: var(--hl-foreground);
 }
+
+/* ---------- 7. 互动层：阅读量 / 点赞 / 评论区 / 统计页 ---------- */
+
+/* 计数统一 mono + 表格数字，呼应点线目录的编号气质 */
+.hl-num {
+  font-family: var(--sl-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 文章底部互动条：hairline 上边线，克制的一行 */
+.hl-eng {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2.75rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--hl-border);
+  font-size: 0.8rem;
+  color: var(--hl-muted-fg);
+}
+.hl-eng[hidden] { display: none; }
+
+.hl-eng-views .hl-num {
+  font-weight: 600;
+  color: var(--hl-foreground);
+}
+
+.hl-eng-like {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-left: auto;
+  padding: 0.32rem 0.85rem;
+  border: 1px solid var(--hl-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--hl-muted-fg);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+.hl-eng-like:hover {
+  color: var(--sl-color-accent);
+  border-color: var(--sl-color-accent);
+}
+.hl-eng-like[aria-pressed='true'] {
+  color: var(--sl-color-accent);
+  border-color: var(--sl-color-accent);
+}
+.hl-eng-like[aria-pressed='true'] .hl-num {
+  font-weight: 600;
+}
+.hl-eng-like:focus-visible {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 2px;
+}
+
+/* 评论区：hairline 分区 + 小节标题，与正文层级一致 */
+.hl-comments {
+  margin-top: 2.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--hl-border);
+}
+.hl-comments-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--hl-foreground);
+}
+
+/* 统计页：汇总卡片行 */
+.hl-stats-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 3rem;
+  margin-top: 2.25rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--hl-border);
+  border-bottom: 1px solid var(--hl-border);
+}
+.hl-stats-cards[hidden] { display: none; }
+.hl-stat-num {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--hl-foreground);
+  line-height: 1.2;
+}
+.hl-stat-label {
+  font-size: 0.78rem;
+  color: var(--hl-muted-fg);
+  margin-top: 0.15rem;
+}
+
+.hl-stats-map {
+  margin-top: 1.75rem;
+  height: 480px;
+}
+.hl-stats-map[hidden] { display: none; }
+
+.hl-stats-error {
+  margin-top: 2rem;
+  padding: 1.25rem 1rem;
+  border-top: 1px solid var(--hl-border);
+  border-bottom: 1px solid var(--hl-border);
+  font-size: 0.9rem;
+  color: var(--hl-muted-fg);
+}
+.hl-stats-error[hidden] { display: none; }
+
+.hl-stats-top {
+  margin-top: 2.5rem;
+}
+.hl-stats-top[hidden] { display: none; }
+.hl-stats-top-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--hl-foreground);
+}

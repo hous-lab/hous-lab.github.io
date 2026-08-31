@@ -7,11 +7,20 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "worker:dev": "wrangler dev --config worker/wrangler.jsonc",
+    "worker:login": "wrangler login",
+    "worker:kv:create": "wrangler kv namespace create STATS --config worker/wrangler.jsonc",
+    "worker:deploy": "wrangler deploy --config worker/wrangler.jsonc"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.41.9",
     "astro": "^7.2.8",
+    "echarts": "^6.1.0",
     "sharp": "^0.35.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260831.1",
+    "wrangler": "^4.127.1"
   }
 }

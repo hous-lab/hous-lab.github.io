@@ -24,6 +24,10 @@ Hous Lab 是我的个人技术知识库的公开层，方向是：
 
 所有文章**经作者确认后才会发布**。仓库内未合并到 `main` 的草稿不会上线。
 
+## 隐私说明
+
+本站统计页面展示的是**国家级匿名聚合**数据：不存储原始 IP 与 User-Agent（仅用日盐哈希做 24 小时去重），不使用任何跟踪 Cookie。唯一写入浏览器的 Cookie 是点赞状态位，仅记录你是否点过赞，无跟踪用途。评论数据存放于 GitHub Discussions。
+
 ## 联系
 
 - GitHub: [github.com/hous-lab](https://github.com/hous-lab)

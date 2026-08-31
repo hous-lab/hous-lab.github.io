@@ -23,6 +23,10 @@ export default defineConfig({
           'https://github.com/hous-lab/hous-lab.github.io/tree/main/src/content/docs',
       },
       customCss: ['./src/styles/custom.css'],
+      components: {
+        // 在页脚区域挂载 阅读量/点赞/评论区（见 src/components/overrides/Footer.astro）
+        Footer: './src/components/overrides/Footer.astro',
+      },
       sidebar: [
         { label: '首页', link: '/' },
         { label: '项目', link: '/projects/' },
@@ -32,6 +36,7 @@ export default defineConfig({
         { label: '工程方法', link: '/engineering/' },
         { label: '技术笔记', link: '/notes/' },
         { label: '关于', link: '/about/' },
+        { label: '站点统计', link: '/stats/' },
       ],
     }),
   ],
